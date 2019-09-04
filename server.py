@@ -1,7 +1,7 @@
 from flask import Flask,render_template,request,jsonify
 import tweepy
 from textblob import TextBlob
-
+from gevent.pywsgi import WSGIServer
 
 #---------------------------------------------------------------------------
 
@@ -35,10 +35,16 @@ def search():
         subjectivity = TextBlob(tweet.full_text).sentiment.subjectivity
         t.append([tweet.full_text,polarity,subjectivity])
         # t.append(tweet.full_text)
-
     return jsonify({"success":True,"tweets":t})
 
 
 #---------------------------------------------------------------------------
+# Local app serving
 
+if __name__ == '__main__':
+    # app.run(port=5002, debug=True)
 
+    # Serve the app with gevent
+    http_server = WSGIServer(('0.0.0.0', 5000), app)
+    print('\n All done! Open http://localhost:5000 and have fun :) ....')
+    http_server.serve_forever()
